@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 #include <d3d8.h>
 
 //application title
@@ -38,6 +39,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 	//set up the window with the class info
 	return RegisterClassEx(&wc);
+}
+
+LPCSTR IntToLPCSTR(int number) {
+	static char buffer[256]; // Assuming a maximum of 256 characters
+	sprintf_s(buffer, "%d", number);
+	return buffer;
 }
 
 //entry point for a Windows program
@@ -80,6 +87,52 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	IDirect3D8* pd3d; //pointer to an IDirect3D8 object
 	pd3d = Direct3DCreate8(D3D_SDK_VERSION); //create IDirect3D8 object
+
+	//get the number of display adapters available.
+	UINT adapters = pd3d->GetAdapterCount();
+	MessageBox(hWnd, IntToLPCSTR(adapters), "Number of display adapters available", MB_OK);
+
+	//identify the adapter.
+	D3DADAPTER_IDENTIFIER8 adapData;
+	pd3d->GetAdapterIdentifier(0, 0, &adapData);
+	static char buffer[2000];
+	sprintf_s(buffer, "%s %s %d", adapData.Driver, adapData.Description, adapData.VendorId);
+	MessageBox(hWnd, buffer, "device data", MB_OK);
+
+	//get capabilities of the adapter
+	D3DCAPS8 capsHAL;
+	D3DCAPS8 capsRef;
+	pd3d->GetDeviceCaps(0, D3DDEVTYPE_HAL, &capsHAL);
+	pd3d->GetDeviceCaps(0, D3DDEVTYPE_REF, &capsHAL);
+
+	if (capsHAL.Caps2 & D3DCAPS2_CANRENDERWINDOWED)
+	{
+		MessageBox(hWnd, "you can render to a window", "caps", MB_OK);
+	}
+	else
+	{
+		MessageBox(hWnd, "you can not render to a window", "caps", MB_OK);
+	}
+
+	//check the modes of the adapter
+	UINT modes = pd3d->GetAdapterModeCount(0);
+	MessageBox(hWnd, IntToLPCSTR(modes), "modes", MB_OK);
+
+	int higherWidth = 0;
+	int height = 0;
+	for (int i = 0; i < modes; i++) {
+		D3DDISPLAYMODE dmode;
+		pd3d->EnumAdapterModes(0, i, &dmode);
+		if (dmode.Width > higherWidth)
+		{
+			higherWidth = dmode.Width;
+			height = dmode.Height;
+		}
+	}
+	static char bufmode[200];
+	sprintf_s(bufmode, "%d x %d", higherWidth, height);
+	MessageBox(hWnd, bufmode, "resolution with highest width", MB_OK);
+
 	//destroy IDirect3D8 object
 	if (pd3d)
 	{
