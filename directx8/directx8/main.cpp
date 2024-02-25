@@ -131,7 +131,41 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	static char bufmode[200];
 	sprintf_s(bufmode, "%d x %d", higherWidth, height);
-	MessageBox(hWnd, bufmode, "resolution with highest width", MB_OK);
+	MessageBox(hWnd, bufmode, "first resolution with highest width", MB_OK);
+
+	//get the current display mode
+	D3DDISPLAYMODE pMode;
+	pd3d->GetAdapterDisplayMode(0, &pMode);
+	static char bufmode2[200];
+	sprintf_s(bufmode2, "%d x %d", pMode.Width, pMode.Height);
+	MessageBox(hWnd, bufmode2, "Actual resolution", MB_OK);
+
+	//checking resource formats. The IDirect3D8::CheckDeviceFormat function is used to check whether
+	//a particular type of resource can be used on a given adapter in a given
+	//mode using a given device type.
+
+	//check if a certain pixel format is supported.
+	D3DFORMAT formatToCheck = D3DFMT_X8R8G8B8; // Example pixel format to check
+	HRESULT hr = pd3d->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, pMode.Format,
+		D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, formatToCheck);
+
+	if (SUCCEEDED(hr))
+	{
+		MessageBox(hWnd, "Pixel format is supported", "check support", MB_OK);
+	}
+	else
+	{
+		MessageBox(hWnd, "Pixel format is not supported", "check support", MB_OK);
+	}
+
+	//check if hardware acceleration is available with certain configuration.
+	hr = pd3d->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, pMode.Format, D3DFMT_X8R8G8B8, TRUE);
+	if (SUCCEEDED(hr)) {
+		MessageBox(hWnd, "D3DDEVTYPE_HAL is supported", "check support", MB_OK);
+	}
+	else {
+		MessageBox(hWnd, "D3DDEVTYPE_HAL is not supported", "check support", MB_OK);
+	}
 
 	//destroy IDirect3D8 object
 	if (pd3d)
