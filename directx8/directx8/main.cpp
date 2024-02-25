@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
+#include <iostream>
 #include <d3d8.h>
 
 //application title
@@ -167,9 +168,70 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		MessageBox(hWnd, "D3DDEVTYPE_HAL is not supported", "check support", MB_OK);
 	}
 
+	//create a device.
+	D3DPRESENT_PARAMETERS pParam; //structure telling how you want your devide to present scenes.
+	ZeroMemory(&pParam, sizeof(pParam));
+	pParam.BackBufferFormat = pMode.Format; //D3DFMT_UNKNOWN; //use current.
+	//pParam.BackBufferCount = 1;
+	//pParam.BackBufferWidth = 0; //0 means the same as the window.
+	//pParam.BackBufferHeight = 0;
+	//pParam.hDeviceWindow = hWnd;
+	//pParam.EnableAutoDepthStencil = FALSE;
+	//pParam.AutoDepthStencilFormat = D3DFMT_UNKNOWN;
+	//pParam.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+	//pParam.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+	pParam.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	pParam.Windowed = TRUE;
+	IDirect3DDevice8 *d8Dev;
+	hr = pd3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &pParam, &d8Dev);
+
+	static char bufdev[200];
+	if (SUCCEEDED(hr))
+	{
+		sprintf_s(bufdev, "%s", "device created succesfully");
+	}
+	else
+	{
+		sprintf_s(bufdev, "%s", "can't create device");
+		if(hr == D3DERR_INVALIDCALL) sprintf_s(bufdev, "%s", "invalid call");
+		if(hr == D3DERR_NOTAVAILABLE) sprintf_s(bufdev, "%s", "device not available");
+		if(hr == D3DERR_OUTOFVIDEOMEMORY) sprintf_s(bufdev, "%s", "out of video memory");
+	}
+	MessageBox(hWnd, bufdev, "device creation", MB_OK);
+
+	//setting up a viewport (the zone to which you will be rendering).
+	D3DVIEWPORT8 pViewport;
+	pViewport.X = 0;
+	pViewport.Y = 0;
+	pViewport.Width = 480;  //dimensions of the window or less.
+	pViewport.Height = 360;
+	pViewport.MinZ = 0.0f;
+	pViewport.MaxZ = 1.0f;
+	hr = d8Dev->SetViewport(&pViewport);
+
+	static char bufview[200];
+	if (SUCCEEDED(hr))
+	{
+		sprintf_s(bufview, "%s", "viewport created succesfully");
+	}
+	else
+	{
+		sprintf_s(bufview, "%s %s %s", "can not create viewport", IntToLPCSTR(pViewport.Width), IntToLPCSTR(pViewport.Height));
+	}
+	MessageBox(hWnd, bufview, "viewport creation", MB_OK);
+
+	//clear a viewport
+	d8Dev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 255, 0), 1.0f, 0);
+
+	// Present the backbuffer contents to the display
+	// source rect, dest rect, window to send (null for current), always Null.
+	d8Dev->Present(NULL, NULL, NULL, NULL);
+
+
 	//destroy IDirect3D8 object
 	if (pd3d)
 	{
+		if(d8Dev) d8Dev->Release(); //destroy the device.
 		pd3d->Release();
 		pd3d = NULL;
 	}
