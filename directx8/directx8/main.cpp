@@ -230,6 +230,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	MessageBox(hWnd, bufview, "viewport creation", MB_OK);
 
+	//set the format of the vertices.
+	d8Dev->SetVertexShader(D3DFVF_CUSTOMVERTEX);
+
 	// Initialize a list of vertices
 	CUSTOMVERTEX g_Vertices[] =
 	{
@@ -249,14 +252,31 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		{  53.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
 		{  54.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
 	};
-	d8Dev->SetVertexShader(D3DFVF_CUSTOMVERTEX);
+	
+	CUSTOMVERTEX g_VerticesLines[] = 
+	{
+		{100.0f, 100.0f, 0.5f, 1.0f, 0xffff0000, },
+		{200.0f, 100.0f, 0.5f, 1.0f, 0xffff0000,},
+	};
+
+	CUSTOMVERTEX g_VerticesTriangle[] = 
+	{
+		{200.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, },
+		{300.0f, 150.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{200.0f, 150.0f, 0.5f, 1.0f, 0xff0000ff, },
+	};
 
 	//clear a viewport
 	d8Dev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0);
 
 	d8Dev->BeginScene();
 
-	d8Dev->DrawPrimitiveUP(D3DPT_POINTLIST, 15, g_Vertices, sizeof(CUSTOMVERTEX)); //draw some points
+	//three points
+	d8Dev->DrawPrimitiveUP(D3DPT_POINTLIST, 15, g_Vertices, sizeof(CUSTOMVERTEX)); //draw some points together so i can see them.
+	//a line
+	d8Dev->DrawPrimitiveUP(D3DPT_LINELIST, 2/2, g_VerticesLines, sizeof(CUSTOMVERTEX));
+	//a triangle
+	d8Dev->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 3 / 3, g_VerticesTriangle, sizeof(CUSTOMVERTEX));
 
 	d8Dev->EndScene();
 
