@@ -6,6 +6,16 @@
 //application title
 #define APPTITLE "DirectX8 example"
 
+// A structure for our custom vertex type
+struct CUSTOMVERTEX
+{
+	FLOAT x, y, z, rhw; // The transformed position for the vertex
+	DWORD color;        // The vertex color
+};
+
+// Our custom FVF, which describes our custom vertex structure
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
+
 //window event callback function
 LRESULT WINAPI WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -220,8 +230,35 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	MessageBox(hWnd, bufview, "viewport creation", MB_OK);
 
+	// Initialize three vertices for rendering a triangle
+	CUSTOMVERTEX g_Vertices[] =
+	{
+		{ 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, }, // x, y, z, rhw, color
+		{ 151.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, },
+		{ 149.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, },
+		{ 150.0f,  49.0f, 0.5f, 1.0f, 0xffff0000, },
+		{ 150.0f,  51.0f, 0.5f, 1.0f, 0xffff0000, },
+		{ 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{ 251.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{ 252.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{ 253.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{ 254.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{  50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+		{  51.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+		{  52.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+		{  53.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+		{  54.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff, },
+	};
+	d8Dev->SetVertexShader(D3DFVF_CUSTOMVERTEX);
+
 	//clear a viewport
-	d8Dev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 255, 0), 1.0f, 0);
+	d8Dev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0);
+
+	d8Dev->BeginScene();
+
+	d8Dev->DrawPrimitiveUP(D3DPT_POINTLIST, 15, g_Vertices, sizeof(CUSTOMVERTEX));
+
+	d8Dev->EndScene();
 
 	// Present the backbuffer contents to the display
 	// source rect, dest rect, window to send (null for current), always Null.
