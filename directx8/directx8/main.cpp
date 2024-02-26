@@ -230,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	MessageBox(hWnd, bufview, "viewport creation", MB_OK);
 
-	// Initialize three vertices for rendering a triangle
+	// Initialize a list of vertices
 	CUSTOMVERTEX g_Vertices[] =
 	{
 		{ 150.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, }, // x, y, z, rhw, color
@@ -256,7 +256,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	d8Dev->BeginScene();
 
-	d8Dev->DrawPrimitiveUP(D3DPT_POINTLIST, 15, g_Vertices, sizeof(CUSTOMVERTEX));
+	d8Dev->DrawPrimitiveUP(D3DPT_POINTLIST, 15, g_Vertices, sizeof(CUSTOMVERTEX)); //draw some points
 
 	d8Dev->EndScene();
 
