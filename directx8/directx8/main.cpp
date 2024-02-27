@@ -266,6 +266,30 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		{200.0f, 150.0f, 0.5f, 1.0f, 0xff0000ff, },
 	};
 
+	CUSTOMVERTEX g_VerticesLineStrip[] = 
+	{
+		{400.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, },
+		{425.0f, 150.0f, 0.5f, 1.0f, 0xffff0000, },
+		{375.0f, 200.0f, 0.5f, 1.0f, 0xffff0000, },
+	};
+
+	CUSTOMVERTEX g_VerticesTriangleStrip[] =
+	{
+		{400.0f, 250.0f, 0.5f, 1.0f, 0xffff0000, },
+		{450.0f, 300.0f, 0.5f, 1.0f, 0xffff0000, },
+		{375.0f, 300.0f, 0.5f, 1.0f, 0xffff0000, },
+		{300.0f, 350.0f, 0.5f, 1.0f, 0xff00ffff, },
+	};
+
+	CUSTOMVERTEX g_VerticesTriangleFan[] = 
+	{
+		{100.0f, 300.0f, 0.5f, 1.0f, 0xffff0000, },
+		{100.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
+		{150.0f, 275.0f, 0.5f, 1.0f, 0xffff0000, },
+		{125.0f, 300.0f, 0.5f, 1.0f, 0xff00ffff, },
+		{135.0f, 350.0f, 0.5f, 1.0f, 0xff0000ff, }
+	};
+
 	//clear a viewport
 	d8Dev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0);
 
@@ -277,6 +301,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	d8Dev->DrawPrimitiveUP(D3DPT_LINELIST, 2/2, g_VerticesLines, sizeof(CUSTOMVERTEX));
 	//a triangle
 	d8Dev->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 3 / 3, g_VerticesTriangle, sizeof(CUSTOMVERTEX));
+	//a line strip
+	d8Dev->DrawPrimitiveUP(D3DPT_LINESTRIP, 3 - 1, g_VerticesLineStrip, sizeof(CUSTOMVERTEX));
+	//a triangle strip
+	d8Dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 4 - 2, g_VerticesTriangleStrip, sizeof(CUSTOMVERTEX));
+	//a triangle fan
+	d8Dev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 5 - 2, g_VerticesTriangleFan, sizeof(CUSTOMVERTEX));
 
 	d8Dev->EndScene();
 
